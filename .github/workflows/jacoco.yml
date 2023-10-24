@@ -19,11 +19,6 @@ jobs:
     - name: Build and Test with Maven
       run: mvn clean verify
 
-    - name: Publish Jacoco report
-      uses: codecov/codecov-action@v2
-      with:
-        fail_ci_if_error: true
-    
     - name: Check coverage
       run: |
         COVERAGE=$(grep -oP 'total="[^"]*"\s*missed="[^"]*"\s*covered="\K\d+' target/site/jacoco/jacoco.xml)
