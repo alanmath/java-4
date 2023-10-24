@@ -1,0 +1,36 @@
+name: Jacoco Coverage Report
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+
+    - name: Build and Test with Maven
+      run: mvn clean verify
+
+    - name: Publish Jacoco report
+      uses: codecov/codecov-action@v2
+      with:
+        fail_ci_if_error: true
+    
+    - name: Check coverage
+      run: |
+        COVERAGE=$(grep -oP 'total="[^"]*"\s*missed="[^"]*"\s*covered="\K\d+' target/site/jacoco/jacoco.xml)
+        if [ "$COVERAGE" -lt 20 ]; then
+          echo "Test coverage is below 20%!";
+          exit 1;
+        fi
+
+    - name: Generate Badge
+      uses: cicirello/jacoco-badge-generator@v2
